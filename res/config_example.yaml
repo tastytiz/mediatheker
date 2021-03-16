@@ -1,0 +1,55 @@
+MAIL:
+  imap_host: imap.example.com
+  imap_port: 993
+  smtp_host: smtp.example.com
+  smtp_port: 465
+  email_name: Example Service
+  email: service@example.com
+  password: password123
+
+TEMPLATE:
+  path: res/templates
+  movies: movies.html
+  reply: replier.html
+
+MOVIES:
+  def_rating: 6.0
+  plot_length: 270
+  mime_types: ['video/webm', 'video/mp4']
+
+ARD:
+  mediathek_url: https://www.ardmediathek.de
+  filme_url: /ard/filme/
+  api_url: http://www.ardmediathek.de/play/media/
+  section_names: ['Filmtipps', 'Besondere Filme']
+
+ZDF:
+  filme_url: https://www.zdf.de/filme/
+  api_url: https://api.zdf.de
+  playerid: ngplayer_2_4
+
+ARTE:
+  filme_url: https://www.arte.tv/de/videos/kino/filme/
+  token_url: https://static-cdn.arte.tv/static/artevp/5.2.2/config/json/general.json
+  api_url: https://api.arte.tv/api/player/v1/config/
+  lang: de
+
+IMDB:
+  movie_checks: 5
+  winner_threshold: 13
+  runtime_max: 10
+  title_max: 3
+  episode_max: 5
+  looser_threshold: 2
+  movie: 2
+
+DB:
+  path: res/db.json
+  backup_path: res/db_backup.json
+  latest_movies: latest_movies
+  available_movies: available_movies
+  subscribers: subscribers
+  run_info: run_info
+  first_seen: first_seen
+  first_seen_storage: 30
+

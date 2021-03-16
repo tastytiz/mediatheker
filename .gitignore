@@ -1,0 +1,6 @@
+*.log
+config.yaml
+res/db.json
+res/db_backup.json
+dev/
+packages/__pycache__

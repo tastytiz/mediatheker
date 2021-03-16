@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block content %}
+<table align="center" border="0" cellpadding="0" cellspacing="0" width="500" style="border-collapse: collapse;">
+    <tr>
+        <td align="center">
+            {% if info["flag"] == "stop" %}<img src="https://media2.giphy.com/media/kaBU6pgv0OsPHz2yxy/giphy.gif">{%endif%}
+            {% if info["flag"] == "rating" %}<img src="https://media0.giphy.com/media/a0h7sAqON67nO/giphy.gif">{%endif%}
+            {% if info["flag"] == "subscribe" %}<img src="https://media2.giphy.com/media/xT9IgG50Fb7Mi0prBC/giphy.gif">{%endif%}
+            {% if info["flag"] == "unknown" %}<img src="https://media4.giphy.com/media/JSueytO5O29yM/giphy.gif">{%endif%}
+            {% if info["flag"] == "feedback" %}<img src="https://media1.giphy.com/media/mCRJDo24UvJMA/giphy.gif">{%endif%}
+            {% if info["flag"] == "download" %}<img src="https://media1.giphy.com/media/8TkagzJHXLWmI/giphy.gif">{%endif%}
+            {% if info["flag"] == "rerun" %}<img src="https://media3.giphy.com/media/GsiBgbwZAsWsg/giphy.gif">{%endif%}
+            {% if info["flag"] == "rerun-false" %}<img src="https://media4.giphy.com/media/l1J9NRpOeS7i54xnW/giphy.gif">{%endif%}
+        </td>
+    </tr>
+</table>
+{% endblock %}

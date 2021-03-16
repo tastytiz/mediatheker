@@ -1,0 +1,126 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+ <head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  <title>TastyMovie Newsletter</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+</head>
+<body style="margin: 0; padding: 0;">
+    <table align="center" border="0" cellpadding="0" cellspacing="0" width="600" style="border-collapse: collapse;">
+        <tr>
+            <td>
+                <table align="center" border="0" cellpadding="0" cellspacing="0" width="500" style="color: #153643; font-family: Arial, sans-serif; border-collapse: collapse;">
+                    <tr>
+                        <td>
+                            <p style="font-size: 25px;">Hey{% if info["username"] == "?" %},{% else %} {{ info["username"] }},{%endif%}</p>
+                            {% if info["flag"] == "regular" %}<p style="font-size: 18px;">ich habe {% if info["moviecount"] == 1 %}<strong style="font-size: 20px;">einen</strong> neuen Film{% else %}<strong style="font-size: 20px;">{{ info["moviecount"] }}</strong> neue Filme{%endif%} für dich gefunden:</p>{%endif%}
+                            {% if info["flag"] == "all" or info["flag"] == "summary" %}<p style="font-size: 18px;">ich habe {% if info["moviecount"] == 1 %}<strong style="font-size: 20px;">einen</strong> Film{% else %}<strong style="font-size: 20px;">{{ info["moviecount"] }}</strong> Filme{%endif%} für dich gefunden:</p>{%endif%}
+                            {% if info["flag"] == "stop" %}<p style="font-size: 18px;">schade, dass du kein Interesse mehr hast. Ich habe dich von der Liste gelöscht. Solltest du es dir anders überlegen, schreib einfach eine Mail mit dem Betreff "Subscribe" an <a href="mailto:tastyservices@altpetri.de">tastyservices@altpetri.de</a></p>{%endif%}
+                            {% if info["flag"] == "rating" %}<p style="font-size: 18px;">ich habe dein Rating aktualisiert. Ab sofort bekommst du alle Filme mit einem iMDb-Rating <strong>≥ {{ info["rating"] }}</strong></p>{%endif%}
+                            {% if info["flag"] == "subscribe" %}<p style="font-size: 18px;">willkommen! Es freut mich, dass du meinen Newsletter abonniert hast. Ab sofort erhältst du standardmäßig alle Filme mit einem iMDb-Rating (<a href="https://de.wikipedia.org/wiki/Internet_Movie_Database#Bewertungen_in_der_IMDb">?</a>) <strong>≥ {{ info["rating"] }}</strong>. Das Rating bewegt sich von 0.0-10.0 und du kannst es einfach anpassen indem du auf diese Mail mit dem Rating deiner Wahl antwortest (z.B. "7.5").<br>Dein erster Newsletter kommt sofort.</p>{%endif%}
+                            {% if info["flag"] == "feedback" %}<p style="font-size: 18px;">vielen Dank für Dein Feedback! Ich werde mich bemühen es umzusetzen und melde mich bei dir falls ich noch Fragen habe.</p>{%endif%}
+                            {% if info["flag"] == "unknown" %}<p style="font-size: 18px;">ich habe dich leider nicht verstanden. Bitte antworte erneut auf diese E-Mail und achte darauf, dass du ausschließlich mit einem der Befehle (siehe Tabelle unten) antwortest. Keine Anrede, keine Formulierungen.</p>{%endif%}
+                            {% if info["flag"] == "download" %}<p style="font-size: 18px;">Downloadbefehl erhalten. Ich melde mich wieder bei dir, sobald ich Updates dazu habe.</p>{%endif%}
+                            {% if info["flag"] == "rerun" %}<p style="font-size: 18px;">Starte Mediatheker erneut.</p>{%endif%}
+                            {% if info["flag"] == "rerun-false" %}<p style="font-size: 18px;">Mediatheker läuft noch...</p>{%endif%}
+                            {% if info["flag"] != "regular" and info["flag"] != "summary" and info["flag"] != "all" %}<p>Beste Grüße,</br><em style="font-size: 25px;">TastyMovies</em></p>{%endif%}
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                {% block content %}{% endblock %}
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <hr>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <table align="center" border="0" cellpadding="2" cellspacing="0" width="500" style="color: #153643; font-family: Arial, sans-serif; border-collapse: collapse;">
+                    <tr>
+                        <td style="text-align: center;font-size: 15px;">
+                            Ich zeige dir nur Filme mit einem iMDb-Rating <strong>≥ {{ info["rating"] }}</strong>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <table align="center" border="0" cellpadding="2" cellspacing="0" width="500" style="color: #153643; font-size:13px; font-family: Arial, sans-serif; border-collapse: collapse;">
+                                <tr>
+                                    <td colspan="2" style="text-align: center">
+                                        <p style="font-size: 15px;">Du möchtest mehr Infos oder deine Einstellungen ändern?</p>
+                                        Klicke auf einen der <strong>Befehle</strong> unten und schicke die Mail ab oder antworte direkt mit dem jeweiligen Befehl auf diese E-Mail. Du erhältst innerhalb von 15 Minuten eine Antwort, versprochen.
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td align="center">
+                                        <strong>Befehl</strong>
+                                    </td>
+                                    <td align="center">
+                                        <strong>Beschreibung</strong>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="2" align="center">
+                                        <hr>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td align="center">
+                                        <a href="mailto:{{ info["service_email"] }}?subject=All&body=Einfach abschicken, du bekommst in spätestens 15 Minuten deine Antwort.">"all"</a>
+                                    </td>
+                                    <td align="center">
+                                        Erhalte alle zur Zeit verfügbaren Filme
+                                    </td>
+                                </tr>
+                                <tr style='margin:10px'>
+                                    <td align="center">
+                                        <a href="mailto:{{ info["service_email"] }}?subject=Summary&body=Einfach abschicken, du bekommst in spätestens 15 Minuten deine Antwort.">"summary"</a>
+                                    </td>
+                                    <td align="center">
+                                        Erhalte alle Filme zu deinem Rating
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td align="center">
+                                        <a href="mailto:{{ info["service_email"] }}?subject=Rating&body={{ info["rating"] }}%0D%0AÄndere die Zahl oben mit dem Rating deiner Wahl.">z.B. "7.5"</a>
+                                    </td>
+                                    <td align="center">
+                                        Passe deine Rating-Einstellungen an
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td align="center">
+                                        <a href="mailto:{{ info["service_email"] }}?subject=Stop&body=Einfach abschicken, du bekommst in spätestens 15 Minuten deine Abmeldebestätigung.">"stop"</a>
+                                    </td>
+                                    <td align="center">
+                                        Kündige diesen Newsletter
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="2" align="center">
+                            <hr>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="text-align: center;font-size: 15px;">
+                            <strong>Weiterempfehlen?</strong> Gerne!<br>Deine Freunde müssen nur eine E-Mail an <a href="mailto:{{ info["service_email"] }}?subject=Subscribe">{{ info["service_email"] }}</a> mit dem Betreff "Subscribe" schicken.
+                        </td>
+                    </tr><tr>
+                        <td style="text-align: center;font-size: 15px;">
+                            <strong>Feedback?</strong> Danke! Klicke <a href="mailto:{{ info["service_email"] }}?subject=Feedback&body=Schreib mir hier was du denkst:">hier</a> :-) 
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>

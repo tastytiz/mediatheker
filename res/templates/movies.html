@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% block content %}
+{% for _,movie in movies.iterrows()  %}
+<table align="center" border="1" cellpadding="0" cellspacing="0" width="500" style="border-style:dashed; border-collapse: collapse;">
+    <tr>
+        <td width="100" style="border-right-style: none; padding:10px; ">
+            {% if movie["cover_url"]|string != 'nan'  %}<img style="display: block;" width="100" height="150" src='{{ movie["cover_url"] }}'> {% else %} <div style="width:100px ;height:150px;border:2px dotted #153643; background-color: rgb(22,32,36,0.2);"></div>{% endif%}
+            <table align="center" border="0" cellpadding="0" cellspacing="0" width="100" style="margin-top:5px;border-collapse: collapse;">
+                <tr>
+                    <td width="50%" style="color: #153643; text-align:center; font-family: Arial, sans-serif; font-size: 10px;">
+                        ID: {{movie["movie_id"]}}
+                    </td>
+                    <td width="50%">
+                        {% if movie['channel'] == 'ard' %}<img style="display: block; margin:auto;" width="12" height="12" src="https://www.ardmediathek.de/images/ygMeimmH.png">{% elif movie['channel'] == 'zdf' %}<img style="display: block; margin:auto;" width="12" height="12" src="https://www.zdf.de/static/0.70.5306/img/appicons/zdf-57.png">{% elif movie['channel'] == 'arte' %}<img style="display: block; margin:auto;" width="12" height="12" src="https://static-cdn.arte.tv/guide/favicons/favicon-32x32.png">{% endif %}
+                    </td>
+                </tr>
+            </table>
+        </td>
+        <td width="400" style="border-left-style: none;">
+            <table border="0" cellpadding="0" cellspacing="0" style="border-collapse: collapse; color: #153643; font-family: Arial, sans-serif; margin:10px;">
+                <tr>
+                    <td>
+                        <table border="0" cellpadding="0" cellspacing="0" style="border-collapse: collapse; color: #153643; font-family: Arial, sans-serif; margin:10px;">
+                            <tr>
+                                <td style="font-size: 24px; padding-bottom: 2px;" width="320">
+                                    {{ movie["title"] }} {% if movie["language"]|string != '' %} <strong style="font-size: 10px; color: #38525C;">[{{ movie["language"] }}]</strong> {% endif %}
+                                </td>
+                                <td width="80"> 
+                                    <p style="color: #f5c518; font-size: 20px; margin-bottom: 0px; margin-top: 0px;">★ {{ movie["rating"] }}<dfn style="font-size: 10px; color: #153643;"> / 10</dfn></p>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="2">
+                                    <p style="color: #38525C; font-size: 13px; margin-top:0px;margin-bottom:0px;">{% if movie["genres"]|string != 'nan'  %} {{ movie["genres"] }} {% endif %}</p>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="2">
+                                    <p style="color: #38525C; font-size: 13px; margin-top:0px;margin-bottom:3px;  ">{% if movie["year"]|string != 'nan'  and movie["countries"]|string != 'nan' %} {{ movie["year"] }} - {{ movie["countries"] }} {% endif %}</p>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="2" style="padding:2px; font-size: 15px;  ">
+                                    {% if movie["plot"]|string != '' %}{{ movie["plot"] }}<a style="color:#153643;" href="{{ movie["url"] }}"><strong>[…]</strong></a>{% endif %}
+                                </td>
+                            </tr>
+                        </table>
+                        <table border="0" cellpadding="0" cellspacing="0" width="400" style="height:50px; border-collapse: collapse; color: #153643; font-family: Arial, sans-serif;">
+                            <tr>{% if movie["imdbID"]|string != 'nan' %}
+                                <td style="text-align:center;" width="50%">
+                                    <a style="background-color:#f5c518; color:#000; border: 2px solid; border-radius: 5px; padding: 8px; text-decoration: none; font-weight: bold; font-size: 15px; vertical-align: bottom;" href="https://imdb.com/title/tt{{ movie["imdbID"] }}">🔗 IMDb</a>
+                                </td>{%endif%}
+                                <td style="text-align:center;" width="50%">
+                                    <a style="background-color:#153643; color:#fff; border: 2px solid #2C738F; border-radius: 5px; padding: 8px; text-decoration: none; font-weight: bold; font-size: 15px; vertical-align: bottom;" href={% if movie["download_url"]|string != '' %}"{{ movie["download_url"] }}"{% else %}"{{ movie["url"] }}"{% endif %}>▶ Abspielen</a>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+</table>
+<br>
+{% endfor %}
+{% endblock %}
