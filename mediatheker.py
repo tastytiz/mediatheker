@@ -6,7 +6,7 @@ from shutil import copyfile
 from datetime import datetime
 import argparse
 import json
-from os import path
+import os
 
 
 #initialize argument parser
@@ -17,7 +17,7 @@ first_run = packages.FirstRun()
 first_run_counter = 0
 
 # set script config
-if not path.exists('config.yaml'):
+if not os.path.exists('config.yaml'):
     first_run.start_config()
     first_run_counter +=1
 
@@ -35,7 +35,7 @@ fh.setFormatter(logging.Formatter('%(asctime)s - %(name)s - %(message)s'))
 logger.addHandler(fh)
 
 # set database + operations
-if not path.exists(config['DB']['path']):
+if not os.path.exists(config['DB']['path']):
     first_run.start_db()
     first_run_counter +=1
 
@@ -62,9 +62,39 @@ my_parser.add_argument('-l', '--load', action='store_true', help='retrieves new 
 my_parser.add_argument('-sub', '--subscribers', action='store_true', help='retrieves all subscribers from database.')
 my_parser.add_argument('-g', '--get_movie', action='store', help='search & return for specific movie in database using its title.')
 my_parser.add_argument('-a', '--admin', action='store', help='set admin.')
+my_parser.add_argument('-t', '--test', action='store_true', help='make a test run which loads data and sends it to the admin only.')
 
 # Execute parse_args()
 args = my_parser.parse_args()
+
+
+# check if test database exists. If so, replace current db and remove test
+if os.path.exists(config['DB']['test_path']):
+    copyfile(config['DB']['test_path'], config['DB']['path'])
+    os.remove(config['DB']['test_path'])
+
+if args.test:
+    copyfile(config['DB']['path'], config['DB']['test_path'])
+
+    latest_movies.truncate()
+
+    logger.info("Starting TEST with {latest} movies in {latest_name} and {available} movies in {available_name}.".format(latest=len(latest_movies),latest_name=config['DB']['latest_movies'], available=len(available_movies),available_name=config['DB']['available_movies']))
+
+    retrieval_success = movret.retrieve_movies() # retrieve movies
+    # retrieval_success = True
+    if retrieval_success:
+        logger.info('{counter} movies retrieved'.format(counter=len(latest_movies)))
+        movret.update_movie_list()
+        logger.info('{counter} movies updated'.format(counter=len(available_movies)))
+        curr_admin = subscribers.get(Query_obj.admin == True)
+        send_counter, update_counter = mailer.send_newsletter(curr_admin)
+        logger.info(f'TEST Mail successfully sent to {curr_admin["email"]}.')
+    else:
+        logger.error('Error while retrieving the movies. Script stops here.')
+    copyfile(config['DB']['test_path'], config['DB']['path'])
+    os.remove(config['DB']['test_path'])
+
+
 
 if args.load:
     # backup database. Overwrite every night

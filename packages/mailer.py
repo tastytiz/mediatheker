@@ -45,7 +45,7 @@ class Mailer:
         
         message.attach(MIMEText(bodyContent, "html"))#,'utf-8'))
         msgBody = message.as_string()
-        print(message)
+
         # we'll connect using SSL
         server = smtplib.SMTP_SSL(self.smtp_ssl_host, self.smtp_ssl_port)
         # to interact with the server, first we log in

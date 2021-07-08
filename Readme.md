@@ -44,7 +44,7 @@ There are two mail commands only the admin of the service can use:
 | *Download + ID* | Download a specific movie onto the application's server |
 
 
-Besides the *mediatheker.py* app can be run with different arguments:
+Besides, the *mediatheker.py* app can be run with different arguments:
 
 ````
 -l, --load          Used to retrieve new movies + send them out to the subscribers
@@ -81,8 +81,8 @@ foo@bar:~/mediatheker $ python3 mediatheker.py -g "Der Hauptmann"
 ## How to install it?
 
 Requirements:
-- python 3.6 or above 
-- a mail address with IMAP + SMTP access
+- Python 3.6 or above 
+- A mail address with IMAP + SMTP access
 
 Recommendation:
 - A Linux server which support cronjobs or similar in order to let the service run on a regular basis

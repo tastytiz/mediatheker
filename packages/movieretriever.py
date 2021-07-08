@@ -85,13 +85,16 @@ class Movieretriever:
             article_title = article.find("h2", class_="cluster-title")
             if article_title and "Film-Highlights" in article_title:
                 #get all items that are initially loaded by the website first
-                links = re.findall(r'\"actionDetail\":\s\"Cluster:Film-Highlights.*Linkziel:(.*)\"',article.prettify())
+                links = re.findall(r'[\"\']actionDetail[\"\']:\s[\"\']Cluster:Film-Highlights.*Linkziel:(.*)[\"\']',article.prettify())
                 #then get all teaser objects and read the info using another get request
                 teasers = re.findall("data-teaser-xhr-url=\"(.*)\"",article.prettify())
                 for teaser in teasers:
                     teaser_content = requests.get(teaser)
                     soup_teaser = BeautifulSoup(teaser_content.content, 'html.parser')
-                    links.append(re.findall("Linkziel:(.*)\"", soup_teaser.prettify())[0])
+                    linkziel = re.findall("Linkziel:(.*)\"", soup_teaser.prettify())[0]
+                    if re.compile(r'\d').search(linkziel): # only allow those links with a digit in the link list. Otherwise linkziel doesn't contain a movie
+                        links.append(linkziel)
+
         for link in links:
             movie = self.init_movie_element()
             movie = self.zdf_helper(movie,link)
@@ -115,7 +118,7 @@ class Movieretriever:
         soup_movie = BeautifulSoup(curr_movie_page.content, 'html.parser')
         soup_movie_pretty = soup_movie.prettify()
 
-        api_token = re.findall(r'\"apiToken\":\s\"(.*)\"',soup_movie_pretty)[0]
+        api_token = re.findall(r'\"apiToken\":\s\"([\w\d]*)\"',soup_movie_pretty)[0]
         content_url = re.findall(r'\"content\":\s\"(.*)\"',soup_movie_pretty)[0]
 
         api_response = requests.get(content_url,headers={'Api-Auth': 'Bearer {token}'.format(token=api_token)})
@@ -126,21 +129,27 @@ class Movieretriever:
         movie['plot'] = api_json['leadParagraph'][:plot_length]
         main_video_content = api_json['mainVideoContent']['http://zdf.de/rels/target']
         movie['runtime'] = round(main_video_content['duration'] / 60)
-        download_json_url = api_url + main_video_content["http://zdf.de/rels/streams/ptmd-template"].replace('{playerId}',playerid)
 
-        download_json_response = requests.get(download_json_url,headers={'Api-Auth': 'Bearer {token}'.format(token=api_token)})
+        try:
+            # temp fix. There seems to be sth wrong with:
+            # {'title': 'Sieben Stunden', 'duration': 5255, 'visible': True, 'visibleFrom': '2021-06-04T05:00:00.000+02:00', 'visibleTo': '2021-06-11T05:00:00.000+02:00', 'aspectRatio': '16:9', 'profile': 'http://zdf.de/rels/content/content-video-vod-partner-player', 'self': '/content/documents/zdf/arte/arte-plus-7/vod-artede-sieben-stunden-100.json?profile=player', 'canonical': '/content/documents/vod-artede-sieben-stunden-100.json', 'streams': {'default': {'label': 'Normal', 'extId': 'video_artede_078114-000-A', 'http://zdf.de/rels/streams/ptmd-template': '/content/documents/vod-artede-sieben-stunden-100.json?profile=tmd'}}}
+            download_json_url = api_url + main_video_content["http://zdf.de/rels/streams/ptmd-template"].replace('{playerId}',playerid)
+            download_json_response = requests.get(download_json_url,headers={'Api-Auth': 'Bearer {token}'.format(token=api_token)})
 
-        download_json = json.loads(download_json_response.content)
-        formitaet_init = True
-        for formitaet in download_json['priorityList']:
-            formitaet_content = formitaet['formitaeten'][0]
-            if formitaet_content['mimeType'] and formitaet_content['mimeType'] in mime_types:
-                for quality in formitaet_content['qualities']:
-                    if formitaet_init:
-                        movie['download_url'] = quality['audio']['tracks'][0]['uri']
-                        formitaet_init = False
-                    if quality['hd']:
-                        movie['download_url'] = quality['audio']['tracks'][0]['uri']
+            download_json = json.loads(download_json_response.content)
+            formitaet_init = True
+            for formitaet in download_json['priorityList']:
+                formitaet_content = formitaet['formitaeten'][0]
+                if formitaet_content['mimeType'] and formitaet_content['mimeType'] in mime_types:
+                    for quality in formitaet_content['qualities']:
+                        if formitaet_init:
+                            movie['download_url'] = quality['audio']['tracks'][0]['uri']
+                            formitaet_init = False
+                        if quality['hd']:
+                            movie['download_url'] = quality['audio']['tracks'][0]['uri']
+        except:
+            movie['download_url'] = movie['url']
+
         return movie
 
     def get_arte_movies(self):
@@ -285,7 +294,7 @@ class Movieretriever:
 
         var = scripts[len(scripts)-1] # get last script element as that one includes what we are looking for
 
-        var_content = re.findall(r'window.__FETCHED_CONTEXT__ = (.*);', str(var))[0] # Fetched_context is the variable we need to read
+        var_content = re.findall(self.config['ARD']['regex_wfc'], str(var))[0] if len(re.findall(self.config['ARD']['regex_wfc'], str(var))) > 0 else re.findall(self.config['ARD']['regex_fcv'], str(var))[0] # Fetched_context is the variable we need to read
 
         js = json.loads(var_content) #load as json
         movie_base = js[list(js.keys())[0]] # first key is the relevant one
@@ -302,7 +311,7 @@ class Movieretriever:
         #     #movie_download url needs to be converted to a dataframe first
         #     movie_download_array = widgets['mediaCollection']['embedded']['_mediaArray'][0]['_mediaStreamArray']
         # else:
-        contentId = re.findall(r'\"contentId\":\s*(\d+)', var_content)[0]
+        contentId = re.findall(r'[\"\']contentId[\"\']:\s*(\d+)', var_content)[0]
         api_response = requests.get(api_url + contentId)
         api_json = json.loads(api_response.content)
         if(api_json['_duration']):

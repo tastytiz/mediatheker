@@ -21,8 +21,10 @@ ARD:
   mediathek_url: https://www.ardmediathek.de
   filme_url: /ard/filme/
   api_url: http://www.ardmediathek.de/play/media/
-  section_names: ['Filmtipps', 'Besondere Filme']
-
+  section_names: ['Filmtipps', 'Besondere Filme', 'Film-Highlights']
+  regex_wfc: 'window.__FETCHED_CONTEXT__ = (.*);'
+  regex_fcv: '"fetchedContextValue" type="application/json">(.*)</script>'
+  
 ZDF:
   filme_url: https://www.zdf.de/filme/
   api_url: https://api.zdf.de
@@ -46,6 +48,7 @@ IMDB:
 DB:
   path: res/db.json
   backup_path: res/db_backup.json
+  test_path: res/db_test.json
   latest_movies: latest_movies
   available_movies: available_movies
   subscribers: subscribers
