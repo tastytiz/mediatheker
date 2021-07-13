@@ -98,9 +98,10 @@ class Movieretriever:
         for link in links:
             movie = self.init_movie_element()
             movie = self.zdf_helper(movie,link)
-            movie['unique'] = self.create_unique(movie['title'], movie['channel'], movie['runtime'])
-            self.latest_movies.upsert(movie, self.Movies.unique == movie['unique']) 
-            self.checkset_first_seen(movie)
+            if movie:
+                movie['unique'] = self.create_unique(movie['title'], movie['channel'], movie['runtime'])
+                self.latest_movies.upsert(movie, self.Movies.unique == movie['unique']) 
+                self.checkset_first_seen(movie)
 
         # return movies #db
 
@@ -117,9 +118,15 @@ class Movieretriever:
         curr_movie_page = requests.get(movie['url'])
         soup_movie = BeautifulSoup(curr_movie_page.content, 'html.parser')
         soup_movie_pretty = soup_movie.prettify()
-
+        print(link)
         api_token = re.findall(r'\"apiToken\":\s\"([\w\d]*)\"',soup_movie_pretty)[0]
-        content_url = re.findall(r'\"content\":\s\"(.*)\"',soup_movie_pretty)[0]
+        #sometimes a movie is removed from the mediathek, but the thumbnail + info remains in the ZDF's movie hilghlights section. User Experience level 1000...
+        #noticable by a missing content_url.
+        content_url_regex = re.findall(r'\"content\":\s\"(.*)\"',soup_movie_pretty)
+        if len(content_url_regex) > 0:
+            content_url = content_url_regex[0]
+        else:
+            return None
 
         api_response = requests.get(content_url,headers={'Api-Auth': 'Bearer {token}'.format(token=api_token)})
 
